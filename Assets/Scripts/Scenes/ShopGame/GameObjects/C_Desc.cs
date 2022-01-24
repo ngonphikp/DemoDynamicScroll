@@ -16,5 +16,7 @@ public class C_Desc : MonoBehaviour
         txtName.text = item.title;
 
         txtDesc.text = item.desc;
+
+        this.gameObject.SetActive(true);
     }
 }
