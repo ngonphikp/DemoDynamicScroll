@@ -8,9 +8,12 @@ using UnityEngine.EventSystems;
 
 public class C_Shelf : UIBehaviour, IDynamicScrollViewItem
 {
-    [SerializeField] List<C_Item> items = null;
+    [SerializeField] private C_Item prbItem;
+    [SerializeField] private Transform content;
 
-    int dataIndex = -1;
+    private List<C_Item> items = new List<C_Item>();
+
+    private int dataIndex = -1;
 
     public void onUpdateItem(int index)
     {
@@ -26,15 +29,21 @@ public class C_Shelf : UIBehaviour, IDynamicScrollViewItem
         if (this.dataIndex == -1) return;
 
         M_Shelf shelf = C_Shelfs.instance.data[this.dataIndex];
+        
+        // Clear old
+        for (int i = 0; i < items.Count; i++)
+        {
+            PoolManager.S.Despawn(items[i]);
+        }
+        items.Clear();
+
+        // Spawn new
         for (int i = 0; i < shelf.data.Count; i++)
         {
-            Timing.RunCoroutine(items[i]._Set(shelf.data[i]));
-            items[i].gameObject.SetActive(true);
-        }
+            C_Item item = PoolManager.S.Spawn(prbItem, content);
+            Timing.RunCoroutine(item._Set(shelf.data[i]));
 
-        for (int i = shelf.data.Count; i < items.Count; i++)
-        {
-            items[i].gameObject.SetActive(false);
+            items.Add(item);
         }
     }
 }
